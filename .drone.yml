@@ -1,0 +1,19 @@
+pipeline:
+  runtests:
+    image: metwork/mfext-${OS_VERSION}-testimage:${DRONE_BRANCH}
+    commands:
+      - yum -y install metwork-mfserv
+      - /opt/metwork-mfserv/bin/mfserv_wrapper metwork_debug
+      - /opt/metwork-mfserv/bin/mfserv_wrapper env |grep ^MF
+      - su --command="mfserv.start" - mfserv
+      - su --command="mfserv.status" - mfserv
+      - su --command="mfserv.stop" - mfserv
+    when:
+      branch: [ master, integration ]
+
+matrix:
+  OS_VERSION:
+    - centos6
+    - centos7
+
+branches: [ master, integration, ci_*, pci_* ]
